@@ -64,7 +64,6 @@ class _SMappState extends ConsumerState<SMapp> {
       debugShowCheckedModeBanner: false,
       theme: ref.watch(themeControllerProvider),
       home: ref.watch(authStateProvider).when(data: (data) {
-        
         if (data != null) {
           currentUserId = data.uid;
           ref.read(userControllerProvider.notifier).getCurrentUser();

@@ -99,7 +99,7 @@ class FeedScreen extends ConsumerWidget {
             height: 100,
             child : ref.watch(getUsersWhoSharedStoriesControllerProvider(currentUser.followings)).when(data: 
             (users){
-              print("user length : ${users.length}");
+              //print("user length : ${users.length}");
               return ListView.separated(
               shrinkWrap: true,
               physics: BouncingScrollPhysics(),

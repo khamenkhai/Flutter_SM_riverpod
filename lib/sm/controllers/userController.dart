@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sm_project/sm/models/userModel.dart';
 import 'package:sm_project/sm/repositories/storageRepo.dart';
@@ -12,6 +13,10 @@ final currentUserProvider = StateProvider<UserModel?>((ref) => null);
 //get user data by uid
 final getUserByIdController = StreamProvider.family((ref, String uid) =>
     ref.watch(userControllerProvider.notifier).getUser(uid: uid));
+
+//get user data by uid
+final getCurrentUserController = StreamProvider<UserModel>((ref) =>
+    ref.watch(userControllerProvider.notifier).getUser(uid: FirebaseAuth.instance.currentUser!.uid));
 
 //search user by name,with Future data
 final searchUserController = StreamProvider.family((ref, String query) =>

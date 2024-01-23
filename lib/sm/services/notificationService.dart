@@ -4,8 +4,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:sm_project/sm/utils/consts.dart';
+import 'package:sm_project/sm/view/post/viewPostScreen.dart';
+
+final notiServiceController = Provider((ref) => NotificationsService());
+
 
 const channel = AndroidNotificationChannel(
     'high_importance_channel',
@@ -72,6 +77,11 @@ class NotificationsService {
         message.notification!.body,
         notificationDetails,
         payload: message.data['body']);
+
+    // print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    // print("noti post Id : ${message.data["postId"]}");
+    // print("${message.notification!.body}");
+    // print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
   }
 
   Future<void> requestPermission() async {
@@ -113,14 +123,6 @@ class NotificationsService {
 
   String receiverToken = '';
 
-  Future<void> getReceiverToken(String? receiverId) async {
-    final getToken = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(receiverId)
-        .get();
-
-    receiverToken = await getToken.data()!['token'];
-  }
 
   void firebaseNotification(context) {
     _initLocalNotification();
@@ -128,6 +130,7 @@ class NotificationsService {
     FirebaseMessaging.onMessageOpenedApp
         .listen((RemoteMessage message) async {
           print("on message opened app${message.notification!.title}\n");
+      //await Navigator.push(context, MaterialPageRoute(builder: (context)=>ViewPostScreen(postId: "${message.data["postId"]}")));
       await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) =>
@@ -140,7 +143,7 @@ class NotificationsService {
 
     FirebaseMessaging.onMessage
         .listen((RemoteMessage message) async {
-  print("on message${message.notification!.title}\n");
+        print("on message - ${message.notification!.title},message body :  ${message.notification!.body}\n");
 
       await _showLocalNotification(message);
     });
@@ -148,8 +151,12 @@ class NotificationsService {
 
   Future<void> sendNotification(
       {required String body,
-      required String senderId}) async {
+      required String senderId,
+      required String receiverTokenId,
+      required String postId
+      }) async {
     try {
+      print("trying to send noti");
       await http.post(
         Uri.parse('https://fcm.googleapis.com/fcm/send'),
         headers: <String, String>{
@@ -157,7 +164,7 @@ class NotificationsService {
           'Authorization': 'key=$key',
         },
         body: jsonEncode(<String, dynamic>{
-          "to": receiverToken,
+          "to": receiverTokenId,
           'priority': 'high',
           'notification': <String, dynamic>{
             'body': body,
@@ -167,6 +174,7 @@ class NotificationsService {
             'click_action': 'FLUTTER_NOTIFICATION_CLICK',
             'status': 'done',
             'senderId': senderId,
+            'postId': postId,
           }
         }),
       );

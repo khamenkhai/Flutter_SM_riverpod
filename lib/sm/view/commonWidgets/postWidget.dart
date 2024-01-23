@@ -70,8 +70,8 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
   }
 
   //navigate to comment screen
-  goToCommentScreen(PostModel post) {
-    navigatorPush(context, CommentScreen(postId: post.postId, postSharerUserId: post.userId));
+  goToCommentScreen(PostModel post,String postOwnerDeliverToken) {
+    navigatorPush(context, CommentScreen(postId: post.postId, postSharerUserId: post.userId,postSharerToken:postOwnerDeliverToken ));
   }
 
   //save post
@@ -95,7 +95,7 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
 
   @override
   Widget build(BuildContext context) {
-
+    print("post widget rebuilding");
     return ref.watch(getPostByIdControllerProvider(widget.postId)).when(
         data: (post) {
       return Container(
@@ -322,12 +322,14 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
                   : Icon(Icons.favorite_border)),
           IconButton(
               onPressed: () {
-                goToCommentScreen(post);
+                ref.watch(getUserByIdController(post.userId)).whenData((value) {
+                  return goToCommentScreen(post,value.deviceToken!);
+                },);
               },
               icon: Icon(LucideIcons.messageCircle)),
           IconButton(
               onPressed: () {
-                goToCommentScreen(post);
+               
               },
               icon: Icon(LucideIcons.send)),
           Spacer(),

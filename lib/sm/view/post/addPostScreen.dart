@@ -7,7 +7,6 @@ import 'package:sm_project/sm/generated/locale_keys.g.dart';
 import 'package:sm_project/sm/utils/consts.dart';
 import 'package:sm_project/sm/controllers/postController.dart';
 import 'package:sm_project/sm/controllers/userController.dart';
-import 'package:sm_project/sm/models/userModel.dart';
 import 'package:sm_project/sm/utils/utils.dart';
 import 'package:sm_project/sm/view/mainScreen.dart';
 
@@ -24,12 +23,6 @@ class _PostScreenState extends ConsumerState<PostScreen> {
 
   @override
   void initState() {
-    // if (widget.post != null) {
-    //   isUpdate = true;
-    //   postTextController.text = widget.post!.postDescription.toString();
-    //   feeling = widget.post!.feeling!;
-    //   setState(() {});
-    // }
     super.initState();
   }
 
@@ -46,7 +39,7 @@ class _PostScreenState extends ConsumerState<PostScreen> {
   }
 
   //share post
-  post() async {
+  post({required String userDeviceToken}) async {
     if (postTextController == "" && _postImage == null) {
       showMessageSnackBar(
           message: "Both image and post can't be empty!", context: context);
@@ -64,14 +57,15 @@ class _PostScreenState extends ConsumerState<PostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    UserModel user = ref.watch(currentUserProvider.notifier).state!;
+   // UserModel user = ref.watch(currentUserProvider.notifier).state!;
 
     return Scaffold(
       body: SafeArea(
-        child: ListView(
+        child: ref.watch(getCurrentUserController).when(data: (user){
+          return ListView(
           children: [
             //top app bar
-            _topAppBar(context),
+            _topAppBar(context, user.deviceToken!),
 
             ref.watch(postControllerProvider)
                 ? LinearProgressIndicator()
@@ -185,12 +179,18 @@ class _PostScreenState extends ConsumerState<PostScreen> {
                   )
                
           ],
-        ),
+        );
+        }, error: (error,s){
+          return Text("${error}");
+        }, loading: (){
+          return loadingWidget();
+        })
+     
       ),
     );
   }
 
-  Row _topAppBar(BuildContext context) {
+  Row _topAppBar(BuildContext context,String userDeviceToken) {
     return Row(
       children: [
         IconButton(
@@ -204,7 +204,7 @@ class _PostScreenState extends ConsumerState<PostScreen> {
         TextButton(
             onPressed: () {
               //share a post
-              post();
+              post(userDeviceToken: userDeviceToken);
             },
             child: Text("${tr(LocaleKeys.lblPost)}"))
       ],

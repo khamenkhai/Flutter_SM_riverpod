@@ -3,21 +3,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sm_project/sm/controllers/postController.dart';
 import 'package:iconly/iconly.dart';
 import 'package:sm_project/sm/models/commentModel.dart';
+import 'package:sm_project/sm/services/notificationService.dart';
 import 'package:sm_project/sm/utils/utils.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 // ignore: must_be_immutable
 class CommentScreen extends ConsumerWidget {
   CommentScreen(
-      {super.key, required this.postId, required this.postSharerUserId});
+      {super.key, required this.postId, required this.postSharerUserId,
+      required this.postSharerToken,
+      });
   final String postId;
   final String postSharerUserId;
+  final String postSharerToken;
 
   TextEditingController commentTextController = TextEditingController();
 
   ///comment a post
-  writeAComment(WidgetRef ref, String targetUserId) {
+  writeAComment({required WidgetRef ref,required String targetUserId,required String targetUserToken}) {
     ref.read(postControllerProvider.notifier).writeAComment(
+      targetUserToken: targetUserToken,
         postId: postId,
         commentText: commentTextController.text,
         targetUserId: targetUserId);
@@ -44,9 +49,8 @@ class CommentScreen extends ConsumerWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body:
 
-          ///all comments
-
-          ref.watch(getCommentsOfAPostControllerProvider(postId)).when(
+        ///all comments
+        ref.watch(getCommentsOfAPostControllerProvider(postId)).when(
         data: (data) {
           return Column(
             children: [
@@ -102,7 +106,7 @@ class CommentScreen extends ConsumerWidget {
                     fillColor: Theme.of(context).cardColor,
                     suffixIcon: GestureDetector(
                         onTap: () {
-                          writeAComment(ref, postSharerUserId);
+                          writeAComment(ref: ref,targetUserId:  postSharerUserId,targetUserToken: postSharerToken);
                           commentTextController.text = "";
                         },
                         child: Icon(IconlyBold.send)),

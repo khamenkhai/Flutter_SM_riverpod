@@ -54,11 +54,11 @@ class _EditPostScreenState extends ConsumerState<EditPostScreen> {
     } else {
       //to add a new post
       if (widget.post == null) {
-        ref.watch(postControllerProvider.notifier).addNewPost(
-            context: context,
-            postDescription: postTextController.text,
-            postImage: _postImage,
-            feeling: feeling);
+        // ref.watch(postControllerProvider.notifier).addNewPost(
+        //     context: context,
+        //     postDescription: postTextController.text,
+        //     postImage: _postImage,
+        //     feeling: feeling);
       } else {
         //to update a new post
         await ref.watch(postControllerProvider.notifier).updatePost(

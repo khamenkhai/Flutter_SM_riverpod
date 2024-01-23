@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sm_project/sm/models/storyModel.dart';
@@ -98,6 +99,7 @@ Future<List<UserModel>> getUsersWhoSharedStories(List<String> followingIds) asyn
 
 
     if (followingIds.contains(story.userId)) {
+      uniqueUserIds.add(FirebaseAuth.instance.currentUser!.uid);
       uniqueUserIds.add(story.userId);
     }
   }

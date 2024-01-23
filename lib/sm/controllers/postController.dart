@@ -7,21 +7,25 @@ import 'package:sm_project/sm/controllers/userController.dart';
 import 'package:sm_project/sm/models/commentModel.dart';
 import 'package:sm_project/sm/models/notiModel.dart';
 import 'package:sm_project/sm/models/postModel.dart';
+import 'package:sm_project/sm/models/userModel.dart';
 import 'package:sm_project/sm/repositories/postRepository.dart';
 import 'package:sm_project/sm/repositories/storageRepo.dart';
+import 'package:sm_project/sm/services/notificationService.dart';
 import 'package:sm_project/sm/utils/utils.dart';
 import 'package:uuid/uuid.dart';
 
 //to controller all the related fields with post controller
 final postControllerProvider = StateNotifierProvider<PostController, bool>(
     (ref) => PostController(
+      notificationsService:   NotificationsService(),
         storageRepository: ref.read(storageRepositoryController),
         ref: ref,
         postRepository: ref.read(postRepoProvider)));
 
 //to get all the posts data as a stream data
 final getFeedPostsControllerProvider = StreamProvider<List<PostModel>>((ref) {
-  return ref.watch(postRepoProvider).getFeedPost();
+  //return ref.watch(postRepoProvider).getFeedPost();
+  return ref.read(postRepoProvider).getFeedPost();
 });
 
 ///to get a single post data by it's id
@@ -47,10 +51,12 @@ class PostController extends StateNotifier<bool> {
   final PostRepository postRepository;
   final StorageRepository storageRepository;
   final Ref ref;
+  final NotificationsService notificationsService;
 
   PostController(
       {required this.postRepository,
       required this.ref,
+      required this.notificationsService,
       required this.storageRepository})
       : super(false);
 
@@ -167,23 +173,32 @@ class PostController extends StateNotifier<bool> {
   writeAComment(
       {required String postId,
       required String commentText,
-      required String targetUserId}) async {
-    final user = ref.read(currentUserProvider);
-    String commentId = Uuid().v4();
+      required String targetUserId,
+      required String targetUserToken, 
+      }) async {
+    //final user = ref.read(currentUserProvider);
+  UserModel? currentUser;
+
+    ref.read(getUserByIdController(currentUserId)).whenData((value){
+      currentUser = value;
+    });
+
+    if(currentUser!=null){
+      String commentId = Uuid().v4();
     String notiId = Uuid().v4();
     CommentModel comment = CommentModel(
       commentId: commentId,
       postId: postId,
       comment: commentText,
       time: DateTime.now(),
-      senderName: user!.name,
-      senderProfile: user.profileImg,
-      senderId: user.uid,
+      senderName: currentUser!.name,
+      senderProfile: currentUser!.profileImg,
+      senderId: currentUser!.uid,
     );
 
     await postRepository.writeAComment(commentId, comment);
 
-    if (user.uid != targetUserId) {
+    if (currentUser!.uid != targetUserId) {
       // sender: user,postId: postId, notiMessage: "comment on your post", targetUserId: targetUserId
       ref.read(notiControllerProvider).sendANotiMessage(
               noti: NotiModel(
@@ -192,12 +207,19 @@ class PostController extends StateNotifier<bool> {
             notiMessage: "comment on your post",
             userId: targetUserId,
             postId: postId,
-            senderId: user.uid,
-            senderName: user.name,
-            senderProfile: user.profileImg,
+            senderId: currentUser?.uid,
+            senderName: currentUser!.name,
+            senderProfile: currentUser!.profileImg,
           ),
         );
+
+        //test noti
+
+        await notificationsService.sendNotification(postId: postId,body: "body", senderId: currentUserId, receiverTokenId: targetUserToken);
     }
+    }
+
+    await notificationsService.sendNotification(postId: postId,body: "${currentUser!.name} comment on your post!", senderId: currentUserId, receiverTokenId: targetUserToken);
   }
 
   //delete a comment

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sm_project/sm/controllers/authController.dart';
+import 'package:sm_project/sm/services/notificationService.dart';
 import 'package:sm_project/sm/utils/utils.dart';
 import 'package:sm_project/sm/view/authScreens/registerScreen.dart';
 
@@ -23,9 +24,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     navigatorPush(context, RegisterScreen());
   }
 
-  login(WidgetRef ref){
-      ref.read(authControllerProvider.notifier).login(email: _email.text, password: _password.text, context: context);
+  login(WidgetRef ref)async{
+      String status = await ref.read(authControllerProvider.notifier).login(email: _email.text, password: _password.text, context: context);
+      if(status == "Login success!"){
+         notificationsService.requestPermission();
+      notificationsService.firebaseNotification(context);
+      }
   }
+
+  NotificationsService notificationsService = NotificationsService();
 
   @override
   Widget build(BuildContext context) {

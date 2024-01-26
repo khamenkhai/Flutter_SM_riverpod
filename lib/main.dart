@@ -5,18 +5,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sm_project/sm/controllers/authController.dart';
 import 'package:sm_project/sm/controllers/userController.dart';
 import 'package:sm_project/firebase_options.dart';
+import 'package:sm_project/sm/services/notificationService.dart';
 import 'package:sm_project/sm/utils/theme.dart';
 import 'package:sm_project/sm/utils/utils.dart';
 import 'package:sm_project/sm/view/mainScreen.dart';
 import 'sm/view/authScreens/loginScreen.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-Future<void> _backgroundMessageHandler(
-    RemoteMessage message) async {
+Future<void> _backgroundMessageHandler(RemoteMessage message) async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 }
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -25,6 +26,7 @@ void main() async {
   await FirebaseMessaging.instance.getInitialMessage();
   await EasyLocalization.ensureInitialized();
   FirebaseMessaging.onBackgroundMessage(_backgroundMessageHandler);
+
   runApp(EasyLocalization(
       supportedLocales: [Locale('en', ''), Locale('my', '')],
       path: 'assets/translations',
@@ -55,6 +57,8 @@ class _SMappState extends ConsumerState<SMapp> {
     ref.watch(themeControllerProvider.notifier).getCurrentTheme();
   }
 
+  NotificationsService notificationsService = NotificationsService();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -65,6 +69,7 @@ class _SMappState extends ConsumerState<SMapp> {
       theme: ref.watch(themeControllerProvider),
       home: ref.watch(authStateProvider).when(data: (data) {
         if (data != null) {
+          
           currentUserId = data.uid;
           ref.read(userControllerProvider.notifier).getCurrentUser();
           return MainScreen();
@@ -79,4 +84,3 @@ class _SMappState extends ConsumerState<SMapp> {
     );
   }
 }
-

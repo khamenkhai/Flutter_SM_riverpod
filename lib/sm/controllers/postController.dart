@@ -24,14 +24,14 @@ final postControllerProvider = StateNotifierProvider<PostController, bool>(
 
 //to get all the posts data as a stream data
 final getFeedPostsControllerProvider = StreamProvider<List<PostModel>>((ref) {
-  //return ref.watch(postRepoProvider).getFeedPost();
   return ref.read(postRepoProvider).getFeedPost();
+ // return ref.read(postRepoProvider).getFeedPost();
 });
 
 ///to get a single post data by it's id
 final getPostByIdControllerProvider =
     StreamProvider.family((ref, String postId) {
-  return ref.watch(postControllerProvider.notifier).getPostById(postId);
+  return ref.read(postControllerProvider.notifier).getPostById(postId);
 });
 
 ///too get user's all posts by use's uid
@@ -220,6 +220,16 @@ class PostController extends StateNotifier<bool> {
     }
 
     await notificationsService.sendNotification(postId: postId,body: "${currentUser!.name} comment on your post!", senderId: currentUserId, receiverTokenId: targetUserToken);
+  } 
+
+  ///edit a comment  
+  
+  Future<bool> editAComment(CommentModel comment)async{
+    print("editing");
+    state = true;
+    bool status = await postRepository.editComment(comment);
+    state = false;
+    return status;
   }
 
   //delete a comment

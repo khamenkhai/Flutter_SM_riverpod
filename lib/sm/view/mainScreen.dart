@@ -32,9 +32,15 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     notificationsService.getToken();
-    notificationsService.requestPermission();
-    notificationsService.firebaseNotification(context);
+    // notificationsService.requestPermission();
+    // notificationsService.firebaseNotification(context);
     super.initState();
+  }
+
+  initNoti()async{
+    await notificationsService.getToken();
+    await notificationsService.requestPermission();
+    await notificationsService.firebaseNotification(context);
   }
 
   @override

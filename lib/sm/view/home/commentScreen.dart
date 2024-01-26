@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sm_project/sm/controllers/postController.dart';
 import 'package:iconly/iconly.dart';
 import 'package:sm_project/sm/models/commentModel.dart';
-import 'package:sm_project/sm/services/notificationService.dart';
 import 'package:sm_project/sm/utils/utils.dart';
+import 'package:sm_project/sm/view/home/editCommentScreen.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 // ignore: must_be_immutable
@@ -70,7 +70,9 @@ class CommentScreen extends ConsumerWidget {
                                 children: [
                                   ///edit comment list tile
                                   ListTile(
-                                    onTap: () {},
+                                    onTap: () {
+                                      navigatorPush(context, EditCommentScreen(comment: data[index]));
+                                    },
                                     leading: Icon(IconlyLight.edit),
                                     title: Text("Edit comment"),
                                   ),
@@ -95,7 +97,7 @@ class CommentScreen extends ConsumerWidget {
 
               //comment bar
               Container(
-                padding: EdgeInsets.only(left: 15,right: 15,bottom: 7),
+                padding: EdgeInsets.only(left: 15,right: 15,bottom: 7,top: 5),
                 child: TextField(
                   scrollPadding: EdgeInsets.zero,
                   autofocus: true,

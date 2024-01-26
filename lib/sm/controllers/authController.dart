@@ -52,7 +52,7 @@ class AuthController extends StateNotifier<bool> {
   }
 
   ///login
-  login(
+  Future<String> login(
       {required String email,
       required String password,
       required BuildContext context}) async {
@@ -62,8 +62,10 @@ class AuthController extends StateNotifier<bool> {
       password: password,
     );
     showMessageSnackBar(message: message, context: context);
-
+    
     state = false;
+
+    return message;
 
   }
 

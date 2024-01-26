@@ -127,6 +127,29 @@ class PostRepository {
   }
 
 
+  ///ediit comment
+  Future<bool> editComment(CommentModel comment)async{
+    try{
+      print("trying");
+      if(comment.senderId == FirebaseAuth.instance.currentUser!.uid){
+        
+       _commentCollection.doc(comment.commentId).update({
+        "comment":comment.comment
+      });
+
+      print("edited****");
+    return true;
+    }else{
+      print("cant edit***");
+      return false;
+    }
+    }catch(e){
+      print("editComment  :  ${e}");
+      return false;
+    }
+  }
+
+
   ///delete a comment
   deleteAComment(CommentModel comment)async{
     if(comment.senderId == FirebaseAuth.instance.currentUser!.uid){

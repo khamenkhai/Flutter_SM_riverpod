@@ -31,13 +31,13 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void initState() {
-    notificationsService.getToken();
-    // notificationsService.requestPermission();
-    // notificationsService.firebaseNotification(context);
+    ///initialized notification services
+    initNoti();
     super.initState();
   }
 
-  initNoti()async{
+  ///to initialized localization services and firebae notification services
+  initNoti() async {
     await notificationsService.getToken();
     await notificationsService.requestPermission();
     await notificationsService.firebaseNotification(context);
@@ -46,123 +46,58 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: _mainPages[_currentIndex],
-        // bottomNavigationBar: Container(  
-        //   padding: EdgeInsets.symmetric(vertical: 9),
-        //   decoration: BoxDecoration(
-        //     //color: Colors.grey.shade100
-        //   ),
-        //   child: Row(  
-        //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        //     children: [
-        //       IconButton(onPressed: (){}, icon: Icon(IconlyBold.home),padding: EdgeInsets.all(1),)
-        //     ],
-        //   ),
-        // ),
-        // bottomNavigationBar: BottomNavigationBar(
-        //   backgroundColor: Colors.grey,
-        //   type: BottomNavigationBarType.fixed,
-        //   elevation: 0,
-        //   showSelectedLabels: false ,
-        //   showUnselectedLabels: false,
-        //   currentIndex: _currentIndex,
-        //   onTap: (index) async {
-        //     if(index == 2){
-        //       setState(() {
-        //         _currentIndex = 0;
-        //         navigatorPush(context, PostScreen());
-        //       });
-        //     }else{
-        //       setState(() {
-        //       _currentIndex = index;
-        //     });
-        //     }
-        //   },
-        //   items: [
-        //     /// Home
-        //     BottomNavigationBarItem(
-        //       label: "",
-        //       icon: Icon(_currentIndex == 0 ? IconlyBold.home : IconlyLight.home),
-        //     ),
-
-        //     /// Search
-        //     BottomNavigationBarItem(label: "",
-        //       icon: Icon(IconlyLight.search),
-        //     ),
-
-        //     /// Search
-        //     BottomNavigationBarItem(label: "",
-        //       icon: Icon(_currentIndex == 2
-        //           ? IconlyBold.editSquare
-        //           : IconlyLight.edit_square),
-        //     ),
-
-        //     /// Likes
-        //     BottomNavigationBarItem(label: "",
-        //       icon: Icon(
-        //           _currentIndex == 3 ? IconlyBold.heart : IconlyLight.heart),
-        //     ),
-
-        //     /// Profile
-        //     BottomNavigationBarItem(label: "",
-        //       icon: Icon(
-        //           _currentIndex == 4 ? IconlyBold.profile : IconlyLight.profile),
-        //     ),
-        //   ],
-        // ),
-        bottomNavigationBar: DotNavigationBar(
-          unselectedItemColor: Colors.grey,
-          backgroundColor: const Color.fromARGB(255, 28, 28, 28),
-          selectedItemColor: Colors.white,
-          marginR: EdgeInsets.only(left: 40, right: 40, bottom: 11,top: 5),
-          paddingR: EdgeInsets.symmetric(vertical: 4),
-          currentIndex: _currentIndex,
-          onTap: (index) async {
-            if(index == 2){
-              setState(() {
-                _currentIndex = 0;
-                navigatorPush(context, PostScreen());
-              });
-            }else{
-              setState(() {
+      body: _mainPages[_currentIndex],
+      bottomNavigationBar: DotNavigationBar(
+        unselectedItemColor: Colors.grey,
+        backgroundColor: Colors.grey.shade900,
+        selectedItemColor: Colors.white,
+        marginR: EdgeInsets.only(left: 45, right: 45, bottom: 11, top: 15),
+        paddingR: EdgeInsets.symmetric(vertical: 5),
+        currentIndex: _currentIndex,
+        onTap: (index) async {
+          if (index == 2) {
+            setState(() {
+              _currentIndex = 0;
+              navigatorPush(context, PostScreen());
+            });
+          } else {
+            setState(() {
               _currentIndex = index;
             });
-            }
-          },
-          dotIndicatorColor: Colors.transparent,
-          items: [
-            /// Home
-            DotNavigationBarItem(
-              icon: Icon(_currentIndex == 0 ? IconlyBold.home : IconlyLight.home),
-            ),
+          }
+        },
+        dotIndicatorColor: Colors.transparent,
+        items: [
+          /// Home
+          DotNavigationBarItem(
+            icon: Icon(_currentIndex == 0 ? IconlyBold.home : IconlyLight.home),
+          ),
 
-            /// Search
-            DotNavigationBarItem(
-              icon: Icon(IconlyLight.search),
-            ),
+          /// Search
+          DotNavigationBarItem(
+            icon: Icon(IconlyLight.search),
+          ),
 
-            /// Search
-            DotNavigationBarItem(
-              icon: Icon(_currentIndex == 2
-                  ? IconlyBold.editSquare
-                  : IconlyLight.edit_square),
-            ),
+          /// Search
+          DotNavigationBarItem(
+            icon: Icon(_currentIndex == 2
+                ? IconlyBold.editSquare
+                : IconlyLight.edit_square),
+          ),
 
-            /// Likes
-            DotNavigationBarItem(
-              icon: Icon(
-                  _currentIndex == 3 ? IconlyBold.heart : IconlyLight.heart),
-            ),
+          /// Likes
+          DotNavigationBarItem(
+            icon:
+                Icon(_currentIndex == 3 ? IconlyBold.heart : IconlyLight.heart),
+          ),
 
-            /// Profile
-            DotNavigationBarItem(
-              icon: Icon(
-                  _currentIndex == 4 ? IconlyBold.profile : IconlyLight.profile),
-            ),
-          ],
-        ),
-
-
-        );
+          /// Profile
+          DotNavigationBarItem(
+            icon: Icon(
+                _currentIndex == 4 ? IconlyBold.profile : IconlyLight.profile),
+          ),
+        ],
+      ),
+    );
   }
 }

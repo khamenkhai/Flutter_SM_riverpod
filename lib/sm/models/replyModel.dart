@@ -1,23 +1,23 @@
 
 class ReplyModel {
-  final String replyId;
-  final String postId;
-  final String commentId;
-  final String reply;
-  final DateTime time;
-  final String senderName;
-  final String senderProfile;
-  final String senderId;
+  final String? replyId;
+  final String? postId;
+  final String? commentId;
+  final String? reply;
+  final DateTime? time;
+  final String? senderName;
+  final String? senderProfile;
+  final String? senderId;
 
   ReplyModel({
-    required this.replyId,
-    required this.postId,
-    required this.commentId,
-    required this.reply,
-    required this.time,
-    required this.senderName,
-    required this.senderProfile,
-    required this.senderId,
+     this.replyId,
+     this.postId,
+     this.commentId,
+     this.reply,
+     this.time,
+     this.senderName,
+     this.senderProfile,
+     this.senderId,
   });
 
   factory ReplyModel.fromMap(Map<String, dynamic> map) {
@@ -39,7 +39,7 @@ class ReplyModel {
       'postId': postId,
       'commentId': commentId,
       'reply': reply,
-      'time': time.millisecondsSinceEpoch,
+      'time': time?.millisecondsSinceEpoch,
       'senderName': senderName,
       'senderProfile': senderProfile,
       'senderId': senderId,

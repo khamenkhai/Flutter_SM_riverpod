@@ -19,15 +19,15 @@ import 'package:sm_project/sm/view/home/commentScreen.dart';
 import 'package:sm_project/sm/view/home/peopleWhoReactedScreen.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class PostWidget extends ConsumerStatefulWidget {
-  const PostWidget({super.key, required this.postId});
+class TextWidget extends ConsumerStatefulWidget {
+  const TextWidget({super.key, required this.postId});
   final String postId;
 
   @override
-  ConsumerState<PostWidget> createState() => _PostWidgetState();
+  ConsumerState<TextWidget> createState() => _TextWidgetState();
 }
 
-class _PostWidgetState extends ConsumerState<PostWidget> {
+class _TextWidgetState extends ConsumerState<TextWidget> {
   ///like a post
   likeAPost(String targetUserId) {
     ref.watch(postControllerProvider.notifier).likeAPost(
@@ -114,7 +114,7 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ///post header app bar
-              _topBarOfPostWidget(context, post),
+              _topBarOfTextWidget(context, post),
 
               //post image
               post.postImage == null || post.postImage == ""
@@ -226,7 +226,7 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
   }
 
   ///to bar of the post widget that shows user profile image,name,post time,and humburger menu at the right side
-  GestureDetector _topBarOfPostWidget(BuildContext context, PostModel post) {
+  GestureDetector _topBarOfTextWidget(BuildContext context, PostModel post) {
     return GestureDetector(
       onTap: () {
         navigateToProfileScreen(context, post.userId);

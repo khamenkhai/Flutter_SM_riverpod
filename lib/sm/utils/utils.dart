@@ -16,16 +16,15 @@ navigatorPushReplacement(BuildContext context, Widget route,
   Navigator.pushReplacement(context, PageTransition(child: route, type: type));
 }
 
+///show snackbar messagge
 showMessageSnackBar(
     {required String message, required BuildContext context, bool? isSuccess}) {
   var snackBar = SnackBar(
     elevation: 0,
     behavior: SnackBarBehavior.floating,
-    
     backgroundColor: Colors.transparent,
     content: FlutterSnackbarContent(
       color: Colors.grey.shade900,
-      
       message: '${message}',
       contentType: ContentType.success,
     ),
@@ -34,6 +33,23 @@ showMessageSnackBar(
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(snackBar);
+}
+
+///show snackbar in current page
+void showMessage({required String title,required GlobalKey<ScaffoldState> scaffoldKey}) {
+ var snackBar = SnackBar(
+    elevation: 0,
+    behavior: SnackBarBehavior.floating,
+    backgroundColor: Colors.transparent,
+    content: FlutterSnackbarContent(
+      color: Colors.grey.shade900,
+      message: '${title}',
+      contentType: ContentType.success,
+    ),
+  );
+  if (scaffoldKey.currentContext != null) {
+    ScaffoldMessenger.of(scaffoldKey.currentContext!).showSnackBar(snackBar);
+  }
 }
 
 String currentUserId = FirebaseAuth.instance.currentUser!.uid;
@@ -57,18 +73,16 @@ Widget errorWidget(String errorMessage) {
   );
 }
 
-
-
-
 Future<Uint8List?> pickImage(bool isCamera) async {
   // Use the ImagePicker to pick an image from the device
   final picker = ImagePicker();
-  XFile? pickedFile = await picker.pickImage(source:isCamera? ImageSource.camera: ImageSource.gallery);
+  XFile? pickedFile = await picker.pickImage(
+      source: isCamera ? ImageSource.camera : ImageSource.gallery);
 
   if (pickedFile != null) {
     // Read the picked image file as bytes
     List<int> imageBytes = await pickedFile.readAsBytes();
-    
+
     // Convert the image bytes to Uint8List
     Uint8List uint8List = Uint8List.fromList(imageBytes);
 

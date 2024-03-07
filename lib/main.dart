@@ -27,12 +27,16 @@ void main() async {
   await EasyLocalization.ensureInitialized();
   FirebaseMessaging.onBackgroundMessage(_backgroundMessageHandler);
 
-  runApp(EasyLocalization(
+  runApp(
+    ///initialized easy localization
+    EasyLocalization(
       supportedLocales: [Locale('en', ''), Locale('my', '')],
       path: 'assets/translations',
       startLocale: Locale('en'),
       fallbackLocale: Locale('en'),
-      child: ProviderScope(child: SMapp())));
+      child: ProviderScope(child: SMapp()),
+    ),
+  );
 }
 
 //*******************************************/
@@ -45,8 +49,10 @@ class SMapp extends ConsumerStatefulWidget {
 
 class _SMappState extends ConsumerState<SMapp> {
   bool loggedIn = false;
+  NotificationsService notificationsService = NotificationsService();
   @override
   void initState() {
+    ///iintialized theme data at the init state
     Future.delayed(Duration.zero, () {
       initThemeData();
     });
@@ -57,8 +63,6 @@ class _SMappState extends ConsumerState<SMapp> {
     ref.watch(themeControllerProvider.notifier).getCurrentTheme();
   }
 
-  NotificationsService notificationsService = NotificationsService();
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -67,20 +71,25 @@ class _SMappState extends ConsumerState<SMapp> {
       locale: context.locale,
       debugShowCheckedModeBanner: false,
       theme: ref.watch(themeControllerProvider),
-      home: ref.watch(authStateProvider).when(data: (data) {
-        if (data != null) {
-          
-          currentUserId = data.uid;
-          ref.read(userControllerProvider.notifier).getCurrentUser();
-          return MainScreen();
-        } else {
-          return LoginScreen();
-        }
-      }, error: (error, s) {
-        return errorWidget(error.toString() + "error");
-      }, loading: () {
-        return loadingWidget();
-      }),
+      ///redirect to home page only when the user already logged and the current user is not null
+      ///if not redirect to loginscreen
+      home: ref.watch(authStateProvider).when(
+        data: (data) {
+          if (data != null) {
+            currentUserId = data.uid;
+            ref.read(userControllerProvider.notifier).getCurrentUser();
+            return MainScreen();
+          } else {
+            return LoginScreen();
+          }
+        },
+        error: (error, s) {
+          return errorWidget(error.toString() + "error");
+        },
+        loading: () {
+          return loadingWidget();
+        },
+      ),
     );
   }
 }

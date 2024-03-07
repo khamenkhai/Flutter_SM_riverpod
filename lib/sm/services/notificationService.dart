@@ -7,6 +7,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:sm_project/sm/utils/consts.dart';
+import 'package:sm_project/sm/utils/utils.dart';
+import 'package:sm_project/sm/view/post/viewPostScreen.dart';
 
 final notiServiceController = Provider((ref) => NotificationsService());
 
@@ -37,14 +39,14 @@ class NotificationsService {
         InitializationSettings(android: androidSettings, iOS: iosSettings);
     flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse: (response) {
-        debugPrint("_______________________________________________" +
-            response.payload.toString()+"_______________________");
-      },
-      onDidReceiveBackgroundNotificationResponse: (response){
-debugPrint("=====================================" +
-            response.payload.toString()+"=====================================");
-      }
+//       onDidReceiveNotificationResponse: (response) {
+//         debugPrint("_______________________________________________" +
+//             response.payload.toString()+"_______________________");
+//       },
+//       onDidReceiveBackgroundNotificationResponse: (response){
+// debugPrint("=====================================" +
+//             response.payload.toString()+"=====================================");
+//       }
     );
   }
 
@@ -126,14 +128,21 @@ debugPrint("=====================================" +
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
       print("on message opened app${message.notification!.title}\n");
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-            builder: (_) => Scaffold(
-                  appBar: AppBar(
-                    title: Text("testing"),
-                  ),
-                )),
-      );
+
+       final Map<String, dynamic> data = message.data;
+      if (data.containsKey('postId')) {
+       final String postId = data['postId'];
+          print('Received postId: $postId');
+          await navigatorPush(context, ViewPostScreen(postId: postId));
+      }
+      // await Navigator.of(context).push(
+      //   MaterialPageRoute(
+      //       builder: (_) => Scaffold(
+      //             appBar: AppBar(
+      //               title: Text("testing"),
+      //             ),
+      //           )),
+      // );
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {

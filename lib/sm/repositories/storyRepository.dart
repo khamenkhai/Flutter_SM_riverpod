@@ -81,7 +81,7 @@ class StoryRepository {
 
 
 
-Future<List<UserModel>> getUsersWhoSharedStories(List<String> followingIds) async {
+Future<List<UserModel>> getUsersWhoSharedStories2(List<String> followingIds) async {
 
   Set<String> uniqueUserIds = Set<String>();
 
@@ -116,6 +116,38 @@ Future<List<UserModel>> getUsersWhoSharedStories(List<String> followingIds) asyn
   }
 
   return userList;
+}
+
+
+Stream<List<UserModel>> getUsersWhoSharedStories(List<String> followingIds) async* {
+  Set<String> uniqueUserIds = Set<String>();
+  List<UserModel> userList = [];
+
+  final storyQuery = _storyCollection.where(
+    'createdAt',
+    isGreaterThan: DateTime.now().subtract(const Duration(hours: 24)).millisecondsSinceEpoch,
+  );
+  
+  await for (QuerySnapshot querySnapshot in storyQuery.snapshots()) {
+    for (DocumentSnapshot document in querySnapshot.docs) {
+      StoryModel story = StoryModel.fromMap(document.data() as Map<String, dynamic>);
+      if (followingIds.contains(story.userId)) {
+        //uniqueUserIds.add(FirebaseAuth.instance.currentUser!.uid);
+        uniqueUserIds.add(story.userId);
+        print("story data : ${story} and user id : ${story.userId}");
+      }
+    }
+
+    for (String userId in uniqueUserIds) {
+      DocumentSnapshot userSnapshot = await _userCollection.doc(userId).get();
+      if (userSnapshot.exists) {
+        UserModel user = UserModel.fromMap(userSnapshot.data() as Map<String, dynamic>);
+        userList.add(user);
+      }
+    }
+    print("user list : ${userList}");
+    yield userList;
+  }
 }
 
 

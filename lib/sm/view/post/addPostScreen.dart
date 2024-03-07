@@ -11,8 +11,9 @@ import 'package:sm_project/sm/utils/utils.dart';
 import 'package:sm_project/sm/view/mainScreen.dart';
 
 class PostScreen extends ConsumerStatefulWidget {
-  const PostScreen({super.key,});
-  
+  const PostScreen({
+    super.key,
+  });
 
   @override
   ConsumerState<PostScreen> createState() => _PostScreenState();
@@ -20,6 +21,8 @@ class PostScreen extends ConsumerStatefulWidget {
 
 class _PostScreenState extends ConsumerState<PostScreen> {
   bool isUpdate = false;
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -30,167 +33,179 @@ class _PostScreenState extends ConsumerState<PostScreen> {
   String feeling = "";
   Uint8List? _postImage;
 
-
-  _pickPostImage(bool isCamera)async{
+  //select an image to post
+  _pickPostImage(bool isCamera) async {
     _postImage = await pickImage(isCamera);
-    setState(() {
-      
-    });
+    setState(() {});
   }
 
   //share post
-  post({required String userDeviceToken}) async {
-    if (postTextController == "" && _postImage == null) {
-      showMessageSnackBar(
-          message: "Both image and post can't be empty!", context: context);
+  sharePost() async {
+    if (postTextController.text == "" && _postImage == null) {
+      showMessage(
+        title: "Both image and post can't be empty!",
+        scaffoldKey: _scaffoldKey,
+      );
     } else {
       //to add a new post
-     
-        ref.watch(postControllerProvider.notifier).addNewPost(
+      ref.watch(postControllerProvider.notifier).addNewPost(
             context: context,
             postDescription: postTextController.text,
             postImage: _postImage,
-            feeling: feeling);
-  
+            feeling: feeling,
+          );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-   // UserModel user = ref.watch(currentUserProvider.notifier).state!;
-
     return Scaffold(
+      key: _scaffoldKey,
       body: SafeArea(
-        child: ref.watch(getCurrentUserController).when(data: (user){
-          return ListView(
-          children: [
-            //top app bar
-            _topAppBar(context, user.deviceToken!),
+        child: ref.watch(getCurrentUserController).when(
+          data: (user) {
+            return ListView(
+              children: [
+                //top app bar
+                _topAppBar(context, user.deviceToken!),
 
-            ref.watch(postControllerProvider)
-                ? LinearProgressIndicator()
-                : Container(),
+                //show linear progress indicator when the data is loading
+                ref.watch(postControllerProvider)
+                    ? LinearProgressIndicator()
+                    : Container(),
 
-            Container(
-              padding: EdgeInsets.only(left: 15, right: 15, top: 9),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    backgroundImage: NetworkImage(user.profileImg),
+                ///to widget that show user profile image ,name and feeling
+                Container(
+                  padding: EdgeInsets.only(left: 15, right: 15, top: 9),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(user.profileImg),
+                      ),
+                      SizedBox(width: 10),
+                      Text("${user.name}"),
+                      SizedBox(width: 10),
+                      feeling != ""
+                          ? Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    _showFellingpickerDialog(context);
+                                  },
+                                  child: Text("- ${feeling}"),
+                                ),
+                                SizedBox(width: 10),
+                                IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      feeling = "";
+                                    });
+                                  },
+                                  icon: Icon(IconlyBold.delete, size: 18),
+                                )
+                              ],
+                            )
+                          : Container(),
+                    ],
                   ),
-                  SizedBox(width: 10),
-                  Text("${user.name}"),
-                  SizedBox(width: 10),
-                  feeling != ""
-                      ? Row(
-                          children: [
-                            GestureDetector(
-                                onTap: () {
-                                  _showFellingpickerDialog(context);
-                                },
-                                child: Text("- ${feeling}")),
-                            SizedBox(width: 10),
-                            IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    feeling = "";
-                                  });
-                                },
-                                icon: Icon(IconlyBold.delete,size:18))
-                          ],
-                        )
-                      : Container(),
-                ],
-              ),
-            ),
-            SizedBox(height: 15),
-            Container(
-              padding: EdgeInsets.only(left: 15),
-              child: TextField(
-                autofocus: true,
-                controller: postTextController,
-                decoration: InputDecoration(
-                    hintText: "${tr(LocaleKeys.lblwhatsonyourmind)}",
-                    hintStyle: TextStyle(
+                ),
+
+                SizedBox(height: 15),
+
+                ///post description text field
+                Container(
+                  padding: EdgeInsets.only(left: 15),
+                  child: TextField(
+                    autofocus: true,
+                    controller: postTextController,
+                    decoration: InputDecoration(
+                      hintText: "${tr(LocaleKeys.lblwhatsonyourmind)}",
+                      hintStyle: TextStyle(
                         fontSize: 20,
                         color: Colors.grey,
-                        fontWeight: FontWeight.bold),
-                    border: InputBorder.none),
-              ),
-            ),
-
-            _postImage == null
-                ? Container()
-                : Container(
-                    margin: EdgeInsets.only(top: 10),
-                    width: double.infinity,
-                    height: 270,
-                    child: Stack(children: [
-                      Container(
-                          height: 270,
-                          margin: EdgeInsets.symmetric(horizontal: 20),
-                          width: double.infinity,
-                          child: Image.memory(_postImage!, fit: BoxFit.cover)),
-                      Positioned(
-                          right: 10,
-                          child: IconButton(
-                              icon: Icon(Icons.clear),
-                              onPressed: () {
-                                setState(() {
-                                  _postImage = null;
-                                });
-                              }))
-                    ]),
+                        fontWeight: FontWeight.bold,
+                      ),
+                      border: InputBorder.none,
+                    ),
                   ),
+                ),
 
-            // SizedBox(
-            //     height: _postImage == null && widget.post == null
-            //         ? MediaQuery.of(context).size.height / 2
-            //         : 180),
-
-             Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ListTile(
-                        onTap: () {
-                          _pickPostImage(false);
-                        },
-                        leading: Icon(Icons.photo),
-                        title: Text(tr(LocaleKeys.lblPhoto)),
+                ///show selected post image
+                _postImage == null
+                    ? Container()
+                    : Container(
+                        margin: EdgeInsets.only(top: 10),
+                        width: double.infinity,
+                        height: 270,
+                        child: Stack(
+                          children: [
+                            Container(
+                              height: 270,
+                              margin: EdgeInsets.symmetric(horizontal: 20),
+                              width: double.infinity,
+                              child: Image.memory(
+                                _postImage!,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Positioned(
+                              right: 10,
+                              child: IconButton(
+                                icon: Icon(Icons.clear),
+                                onPressed: () {
+                                  setState(() {
+                                    _postImage = null;
+                                  });
+                                },
+                              ),
+                            )
+                          ],
+                        ),
                       ),
 
-                      //
-                      ListTile(
-                        onTap: () {
-                          _pickPostImage(true);
-                        },
-                        leading: Icon(Icons.camera_alt_rounded),
-                        title: Text(tr(LocaleKeys.lblCamera)),
-                      ),
-
-                      ListTile(
-                        onTap: () {
-                          _showFellingpickerDialog(context);
-                        },
-                        leading: Icon(Icons.emoji_emotions_outlined),
-                        title: Text(tr(LocaleKeys.lblFeelings)),
-                      ),
-                    ],
-                  )
-               
-          ],
-        );
-        }, error: (error,s){
-          return Text("${error}");
-        }, loading: (){
-          return loadingWidget();
-        })
-     
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 35),
+                    ListTile(
+                      onTap: () {
+                        _pickPostImage(false);
+                      },
+                      leading: Icon(Icons.photo),
+                      title: Text(tr(LocaleKeys.lblPhoto)),
+                    ),
+                    ListTile(
+                      onTap: () {
+                        _pickPostImage(true);
+                      },
+                      leading: Icon(Icons.camera_alt_rounded),
+                      title: Text(tr(LocaleKeys.lblCamera)),
+                    ),
+                    ListTile(
+                      onTap: () {
+                        _showFellingpickerDialog(context);
+                      },
+                      leading: Icon(Icons.emoji_emotions_outlined),
+                      title: Text(tr(LocaleKeys.lblFeelings)),
+                    ),
+                  ],
+                )
+              ],
+            );
+          },
+          error: (error, s) {
+            return Text("${error}");
+          },
+          loading: () {
+            return loadingWidget();
+          },
+        ),
       ),
     );
   }
 
-  Row _topAppBar(BuildContext context,String userDeviceToken) {
+  ///custom app bar
+  Row _topAppBar(BuildContext context, String userDeviceToken) {
     return Row(
       children: [
         IconButton(
@@ -202,57 +217,62 @@ class _PostScreenState extends ConsumerState<PostScreen> {
         Text(tr(LocaleKeys.lblNewPost), style: TextStyle(fontSize: 18)),
         Spacer(),
         TextButton(
-            onPressed: () {
-              //share a post
-              post(userDeviceToken: userDeviceToken);
-            },
-            child: Text("${tr(LocaleKeys.lblPost)}"))
+          onPressed: () {
+            //share a post
+            sharePost();
+          },
+          child: Text("${tr(LocaleKeys.lblPost)}"),
+        )
       ],
     );
   }
 
-  //show felling picker dialog
+  ///show felling picker dialog
   Future<dynamic> _showFellingpickerDialog(BuildContext context) {
     return showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return Column(
-            children: [
-              ListTile(
-                title: Text("${feeling}"),
-                trailing: IconButton(
-                    onPressed: () {
+      context: context,
+      builder: (context) {
+        return Column(
+          children: [
+            ListTile(
+              title: Text("${feeling}"),
+              trailing: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      feeling = "";
+                    });
+                  },
+                  icon: Icon(Icons.clear)),
+            ),
+            Divider(),
+            Expanded(
+              child: ListView.separated(
+                physics: BouncingScrollPhysics(),
+                padding: EdgeInsets.only(left: 20, bottom: 20, top: 20),
+                separatorBuilder: (c, index) {
+                  return SizedBox(height: 25);
+                },
+                shrinkWrap: true,
+                itemCount: Constants.feelings.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
                       setState(() {
-                            feeling = "";
-                          });
+                        feeling = Constants.feelings[index];
+                      });
+                      Navigator.pop(context);
                     },
-                    icon: Icon(Icons.clear)),
+                    child: Text(
+                      "${Constants.feelings[index]}",
+                      style: TextStyle(fontSize: 17),
+                    ),
+                  );
+                },
               ),
-              Divider(),
-              Expanded(
-                child: ListView.separated(
-                    physics: BouncingScrollPhysics(),
-                    padding: EdgeInsets.only(left: 20, bottom: 20, top: 20),
-                    separatorBuilder: (c, index) {
-                      return SizedBox(height: 25);
-                    },
-                    shrinkWrap: true,
-                    itemCount: Constants.feelings.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            feeling = Constants.feelings[index];
-                          });
-                          Navigator.pop(context);
-                        },
-                        child: Text("${Constants.feelings[index]}",
-                            style: TextStyle(fontSize: 17)),
-                      );
-                    }),
-              )
-            ],
-          );
-        });
+            )
+          ],
+        );
+      },
+    );
   }
 }

@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sm_project/sm/controllers/postController.dart';
 import 'package:sm_project/sm/models/commentModel.dart';
+import 'package:sm_project/sm/models/replyModel.dart';
 
 class EditCommentScreen extends ConsumerStatefulWidget {
-  const EditCommentScreen({super.key, required this.comment});
-  final CommentModel comment;
+  const EditCommentScreen({super.key, this.comment,this.reply});
+  final CommentModel? comment;
+  final ReplyModel? reply;
 
   @override
   ConsumerState<EditCommentScreen> createState() => _EditCommentScreenState();
@@ -16,7 +18,11 @@ class _EditCommentScreenState extends ConsumerState<EditCommentScreen> {
 
   @override
   void initState() {
-    _commentController.text = widget.comment.comment;
+    if(widget.comment!=null){
+      _commentController.text = widget.comment!.comment;
+    }else if(widget.reply!=null){
+      _commentController.text = widget.reply!.reply!;
+    }
     super.initState();
   }
 
@@ -43,7 +49,7 @@ class _EditCommentScreenState extends ConsumerState<EditCommentScreen> {
               child: Row(
                 children: [
                   CircleAvatar(
-                    backgroundImage: NetworkImage(widget.comment.senderProfile),
+                    backgroundImage: NetworkImage(widget.comment!=null ? widget.comment!.senderProfile : widget.reply!.senderProfile!),
                   ),
                   SizedBox(width: 10),
                   Expanded(
@@ -85,10 +91,17 @@ class _EditCommentScreenState extends ConsumerState<EditCommentScreen> {
                   SizedBox(width: 13),
                   ElevatedButton(
                     onPressed: ()async {
-                      bool status = await ref.read(postControllerProvider.notifier).editAComment(widget.comment.copyWith(comment: _commentController.text));
+                      if(widget.comment!=null){
+                        bool status = await ref.read(postControllerProvider.notifier).editAComment(widget.comment!.copyWith(comment: _commentController.text));
                       if(status){
                         Navigator.pop(context);
                       } 
+                      }else{
+                        bool status = await ref.read(postControllerProvider.notifier).editAReply(widget.reply!.copyWith(reply: _commentController.text));
+                      if(status){
+                        Navigator.pop(context);
+                      } 
+                      }
                     },
                     child: Text("Save"),
                     style: ElevatedButton.styleFrom(

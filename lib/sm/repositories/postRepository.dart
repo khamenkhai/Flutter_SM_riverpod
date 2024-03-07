@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sm_project/sm/models/commentModel.dart';
+import 'package:sm_project/sm/models/replyModel.dart';
 import 'package:sm_project/sm/utils/consts.dart';
 import 'package:sm_project/sm/models/postModel.dart';
 
@@ -28,6 +29,7 @@ class PostRepository {
   CollectionReference get _userCollection =>firestore.collection(Constants.usersCollection);
   CollectionReference get _postCollection =>firestore.collection(Constants.postsCollection);
   CollectionReference get _commentCollection =>firestore.collection(Constants.commentsCollection);
+  //CollectionReference get _replyCollection =>firestore.collection(Constants.replyCollection);
 
   
   /// add new post
@@ -183,6 +185,53 @@ class PostRepository {
         "saved": FieldValue.arrayUnion([postId])
       });
       return true;
+    }
+  }
+
+
+  ///make a reply
+  makeAReply(ReplyModel reply)async{
+      await _commentCollection.doc(reply.commentId).collection(Constants.replyCollection).doc(reply.replyId).set(
+        reply.toMap()
+      );
+  }
+
+
+  ///get all repliees of a comment
+  Stream<List<ReplyModel>> getAllRepliesOfComment(String commentId){
+    return _commentCollection.doc(commentId).collection(Constants.replyCollection).orderBy('time',descending: false).snapshots().map((event){
+      return event.docs.map((e) => ReplyModel.fromMap(e.data() as Map<String,dynamic>)).toList();
+    });
+  }
+
+
+
+    ///ediit comment
+  Future<bool> editAReply(ReplyModel reply)async{
+    try{
+      print("trying");
+      if(reply.senderId == FirebaseAuth.instance.currentUser!.uid){
+        
+       _commentCollection.doc(reply.commentId).collection(Constants.replyCollection).doc(reply.replyId).update({
+        "reply":reply.reply
+      });
+    return true;
+    }else{
+
+      return false;
+    }
+    }catch(e){
+      return false;
+    }
+  }
+
+
+  ///delete a comment
+  deleteAReply(ReplyModel reply)async{
+    if(reply.senderId == FirebaseAuth.instance.currentUser!.uid){
+  
+      await _commentCollection.doc(reply.commentId).collection(Constants.replyCollection).doc(reply.replyId).delete();
+
     }
   }
 }

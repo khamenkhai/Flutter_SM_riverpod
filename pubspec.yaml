@@ -75,13 +75,14 @@ dependencies:
   flutter_snackbar_content: ^0.0.3
   photo_view: ^0.14.0
   firebase_messaging: ^14.7.4
-  flutter_local_notifications: ^16.3.1
+  flutter_local_notifications: ^16.3.2
   easy_localization: ^3.0.3
   flutter_image_compress: ^2.1.0
   lucide_icons: ^0.257.0
   bootstrap_icons: ^1.11.3
   feather_icons: ^1.2.0
   story_view: ^0.16.0
+  crystal_navigation_bar: ^1.0.0
   # firebase_core: ^2.21.0
   # #Service Locator
   # get_it: ^7.2.0

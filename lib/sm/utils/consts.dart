@@ -3,6 +3,7 @@ class Constants {
   static const usersCollection = 'SMusers';
   static const postsCollection = 'SMposts';
   static const commentsCollection = 'SMcomments';
+  static const replyCollection = 'SMreply';
   static const noteMessageCollection = 'SMnotiMessages';
   static const storyCollection = 'SMstories';
 

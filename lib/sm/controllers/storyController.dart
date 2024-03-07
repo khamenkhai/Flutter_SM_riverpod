@@ -23,7 +23,7 @@ final getUserStoriesControllerProvider = StreamProvider.family((ref,String userI
 
 
 ///to get all the users who shared stories
-final getUsersWhoSharedStoriesControllerProvider = FutureProvider.family((ref,List<String> userIds) {
+final getUsersWhoSharedStoriesControllerProvider = StreamProvider.family((ref,List<String> userIds) {
   return ref.watch(storyControllerProvider.notifier).getUsersWhoSharedStories(userIds);
 });
 
@@ -55,7 +55,7 @@ class StoryController extends StateNotifier<bool> {
   }
 
   //get user who shared stories
-  Future<List<UserModel>> getUsersWhoSharedStories(List<String> followingIds){
+  Stream<List<UserModel>> getUsersWhoSharedStories(List<String> followingIds){
     return storyRepository.getUsersWhoSharedStories(followingIds);
   }
 

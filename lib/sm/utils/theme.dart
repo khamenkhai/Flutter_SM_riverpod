@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,31 +25,35 @@ class MyTheme {
 
   static final darkMode = ThemeData.dark().copyWith(
     useMaterial3: false,
-      scaffoldBackgroundColor: appBarColor,
-      cardColor: Colors.grey.shade800,
-      appBarTheme: const AppBarTheme(
-        backgroundColor: appBarColor,
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
+    scaffoldBackgroundColor: appBarColor,
+    cardColor: Colors.grey.shade800,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: appBarColor,
+      iconTheme: IconThemeData(
+        color: Colors.white,
       ),
-      drawerTheme: const DrawerThemeData(
-        backgroundColor: appBarColor,
+    ),
+    drawerTheme: const DrawerThemeData(
+      backgroundColor: appBarColor,
+    ),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: Colors.black,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.grey.shade300),
+    primaryColor: Colors.white,
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ButtonStyle(
+        backgroundColor: MaterialStatePropertyAll(Colors.grey.shade900),
       ),
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          backgroundColor: Colors.black,
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.grey.shade300),
-      primaryColor: primaryColor,
-      elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ButtonStyle(
-              backgroundColor:
-                  MaterialStatePropertyAll(Colors.grey.shade900))));
+    ),
+  );
 
   static final lightMode = ThemeData(
-    useMaterial3: false,
+      useMaterial3: false,
       cardColor: Colors.grey.shade100,
       scaffoldBackgroundColor: Colors.white,
+      primaryColor: Colors.black,
+      
       primarySwatch: MaterialColor(
         0xFF424242,
         <int, Color>{
@@ -86,14 +91,16 @@ class MyTheme {
         backgroundColor: Colors.white,
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          backgroundColor: Colors.white,
-          selectedItemColor: Colors.black,
-          unselectedItemColor: Colors.grey),
+        backgroundColor: Colors.white,
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.grey,
+      ),
       fontFamily: "inter");
 }
 
-final themeControllerProvider =
-    StateNotifierProvider<ThemeNotifier, ThemeData>((ref) => ThemeNotifier());
+final themeControllerProvider = StateNotifierProvider<ThemeNotifier, ThemeData>(
+  (ref) => ThemeNotifier(),
+);
 
 class ThemeNotifier extends StateNotifier<ThemeData> {
   ThemeMode thememode;
@@ -124,26 +131,23 @@ class ThemeNotifier extends StateNotifier<ThemeData> {
     }
   }
 
-
-  void toDarkTheme()async{
+  void toDarkTheme() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if(thememode == ThemeMode.light){
+    if (thememode == ThemeMode.light) {
       thememode = ThemeMode.dark;
       state = MyTheme.darkMode;
       prefs.setString('theme', 'dark');
     }
   }
 
-
-  void toLightTheme()async{
+  void toLightTheme() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if(thememode == ThemeMode.dark){
+    if (thememode == ThemeMode.dark) {
       thememode = ThemeMode.light;
       state = MyTheme.lightMode;
       prefs.setString('theme', 'light');
     }
   }
-
 
   // void changeTheme({required isDark}) async {
   //   SharedPreferences prefs = await SharedPreferences.getInstance();

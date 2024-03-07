@@ -241,6 +241,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.3"
+  crystal_navigation_bar:
+    dependency: "direct main"
+    description:
+      name: crystal_navigation_bar
+      sha256: db915a537321978f674ab65b0aef44a7be728589a79923da9a7176dde9b12327
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   csslib:
     dependency: transitive
     description:
@@ -578,10 +586,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_local_notifications
-      sha256: "73fb902a1676450a6fe5ecca8d562a317614d40315e8a08b3b0cd483475996f6"
+      sha256: c18f1de98fe0bb9dd5ba91e1330d4febc8b6a7de6aae3ffe475ef423723e72f3
       url: "https://pub.dev"
     source: hosted
-    version: "16.3.1"
+    version: "16.3.2"
   flutter_local_notifications_linux:
     dependency: transitive
     description:

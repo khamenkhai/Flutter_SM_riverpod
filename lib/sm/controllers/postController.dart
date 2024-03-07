@@ -7,6 +7,7 @@ import 'package:sm_project/sm/controllers/userController.dart';
 import 'package:sm_project/sm/models/commentModel.dart';
 import 'package:sm_project/sm/models/notiModel.dart';
 import 'package:sm_project/sm/models/postModel.dart';
+import 'package:sm_project/sm/models/replyModel.dart';
 import 'package:sm_project/sm/models/userModel.dart';
 import 'package:sm_project/sm/repositories/postRepository.dart';
 import 'package:sm_project/sm/repositories/storageRepo.dart';
@@ -44,6 +45,12 @@ final getUserPostsByUidControllerProvider =
 final getCommentsOfAPostControllerProvider =
     StreamProvider.family((ref, String postId) {
   return ref.read(postControllerProvider.notifier).getCommentsOfAPost(postId);
+});
+
+
+//to get all replies of a comment
+final getRepliesOfCommentControllerProvider =  StreamProvider.family((ref, String commentId) {
+  return ref.read(postControllerProvider.notifier).getRepliesOfAComment(commentId);
 });
 
 ///*****************************main post controller class************************************
@@ -232,9 +239,21 @@ class PostController extends StateNotifier<bool> {
     return status;
   }
 
+  Future<bool> editAReply(ReplyModel reply)async{
+    print("editing");
+    state = true;
+    bool status = await postRepository.editAReply(reply);
+    state = false;
+    return status;
+  }
+
   //delete a comment
   deleteAComment(CommentModel comment) {
     postRepository.deleteAComment(comment);
+  }
+  //delete a comment
+  deleteAReply(ReplyModel reply) {
+    postRepository.deleteAReply(reply);
   }
 
   //get all comments of a post
@@ -249,6 +268,31 @@ class PostController extends StateNotifier<bool> {
   //save post
   savePost(String postId) {
     postRepository.savePost(postId: postId);
+  }
+
+
+  ///make a reply
+  makeAReply({required String commentId,required String reply,
+  required String senderName,
+  required String senderProfile,
+  required String senderId,
+  }){
+    String replyId = Uuid().v4();
+    ReplyModel replyModel = ReplyModel(
+      replyId: replyId,
+      commentId: commentId, 
+      reply: reply, 
+      time: DateTime.now(), 
+      senderName: senderName, 
+      senderProfile: senderProfile, 
+      senderId: senderId);
+    postRepository.makeAReply(replyModel);
+  }
+
+
+  ///get replies of a comment
+  Stream<List<ReplyModel>> getRepliesOfAComment(String commentId){
+    return postRepository.getAllRepliesOfComment(commentId);
   }
 
 }

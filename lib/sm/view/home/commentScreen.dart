@@ -139,9 +139,10 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                             replyAComment();
                           } else {
                             writeAComment(
-                                ref: ref,
-                                targetUserId: widget.postSharerUserId,
-                                targetUserToken: widget.postSharerToken);
+                              ref: ref,
+                              targetUserId: widget.postSharerUserId,
+                              targetUserToken: widget.postSharerToken,
+                            );
                           }
 
                           commentTextController.text = "";
@@ -178,12 +179,11 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
     );
   }
 
-  Future<dynamic> _commentEditOrDeleteModal({
-    required BuildContext context,
-     CommentModel? comment,
-     ReplyModel? reply,
-    required bool isReply
-  }) {
+  Future<dynamic> _commentEditOrDeleteModal(
+      {required BuildContext context,
+      CommentModel? comment,
+      ReplyModel? reply,
+      required bool isReply}) {
     return showModalBottomSheet(
         context: context,
         builder: (context) {
@@ -193,33 +193,37 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
               ///edit comment list tile
               ListTile(
                 onTap: () {
-                  if(!isReply && comment!=null){
+                  if (!isReply && comment != null) {
                     navigatorPush(context, EditCommentScreen(comment: comment));
-                  }else if(isReply && reply!=null){
+                  } else if (isReply && reply != null) {
                     navigatorPush(context, EditCommentScreen(reply: reply));
                   }
                 },
                 leading: Icon(IconlyLight.edit),
-                title: Text(!isReply && comment!=null ? "Edit comment":"Edit reply"),
+                title: Text(!isReply && comment != null
+                    ? "Edit comment"
+                    : "Edit reply"),
               ),
 
               ///delete comment list tile
               ListTile(
                 onTap: () {
-                  if(!isReply && comment!=null){
-                     ref
-                      .read(postControllerProvider.notifier)
-                      .deleteAComment(comment);
-                  }else if(isReply && reply!=null){
-                     ref
-                      .read(postControllerProvider.notifier)
-                      .deleteAReply(reply);
+                  if (!isReply && comment != null) {
+                    ref
+                        .read(postControllerProvider.notifier)
+                        .deleteAComment(comment);
+                  } else if (isReply && reply != null) {
+                    ref
+                        .read(postControllerProvider.notifier)
+                        .deleteAReply(reply);
                   }
-                 
+
                   Navigator.pop(context);
                 },
                 leading: Icon(IconlyLight.delete),
-                title: Text(!isReply && comment!=null ? "Delete comment":"Delete reply"),
+                title: Text(!isReply && comment != null
+                    ? "Delete comment"
+                    : "Delete reply"),
               ),
             ],
           );
@@ -263,15 +267,14 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                           bottomRight: Radius.circular(15),
                           topLeft: Radius.circular(20),
                         )),
-                    child: InkWell(
+                    child: GestureDetector(
                       onLongPress: () {
                         ///is commenting
                         if (comment.senderId == currentUserId) {
                           _commentEditOrDeleteModal(
-                            context: context,
-                            comment: comment,
-                            isReply: false
-                          );
+                              context: context,
+                              comment: comment,
+                              isReply: false);
                         }
                       },
                       child: Column(
@@ -297,7 +300,7 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                       ),
                     ),
                   ),
-                  InkWell(
+                  GestureDetector(
                       onTap: onReply,
                       child: Text(isReplying ? "Cancel" : "Reply")),
                 ],
@@ -341,13 +344,10 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
           CircleAvatar(
             backgroundImage: NetworkImage(reply.senderProfile!),
           ),
-          InkWell(
-            onLongPress: (){
+          GestureDetector(
+            onLongPress: () {
               _commentEditOrDeleteModal(
-                            context: context,
-                            reply: reply,
-                            isReply: true
-                          );
+                  context: context, reply: reply, isReply: true);
             },
             child: Container(
               margin: EdgeInsets.only(bottom: 2, left: 15),

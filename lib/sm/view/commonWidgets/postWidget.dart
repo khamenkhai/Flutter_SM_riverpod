@@ -73,7 +73,7 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
   }
 
   //navigate to comment screen
-  goToCommentScreen(PostModel post, String postOwnerDeliverToken) {
+  redirectToCommentScreen(PostModel post, String postOwnerDeliverToken) {
     navigatorPush(
       context,
       CommentScreen(
@@ -378,7 +378,7 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
               onPressed: () {
                 ref.watch(getUserByIdController(post.userId)).whenData(
                   (value) {
-                    return goToCommentScreen(post, value.deviceToken!);
+                    return redirectToCommentScreen(post, value.deviceToken!);
                   },
                 );
               },

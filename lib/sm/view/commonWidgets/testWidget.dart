@@ -19,19 +19,19 @@ import 'package:sm_project/sm/view/home/commentScreen.dart';
 import 'package:sm_project/sm/view/home/peopleWhoReactedScreen.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class TextWidget extends ConsumerStatefulWidget {
-  const TextWidget({super.key, required this.postId});
-  final String postId;
+class SinglePostWidget extends ConsumerStatefulWidget {
+  const SinglePostWidget({super.key, required this.post});
+  final PostModel post;
 
   @override
-  ConsumerState<TextWidget> createState() => _TextWidgetState();
+  ConsumerState<SinglePostWidget> createState() => _SinglePostWidgetState();
 }
 
-class _TextWidgetState extends ConsumerState<TextWidget> {
+class _SinglePostWidgetState extends ConsumerState<SinglePostWidget> {
   ///like a post
   likeAPost(String targetUserId) {
     ref.watch(postControllerProvider.notifier).likeAPost(
-          postId: widget.postId,
+          postId: widget.post.postId,
           targetUserId: targetUserId,
         );
   }
@@ -39,7 +39,7 @@ class _TextWidgetState extends ConsumerState<TextWidget> {
   //delete a post if it's current user's post
   deleteAPost({required BuildContext context}) {
     ref.read(postControllerProvider.notifier).deleteAPost(
-          widget.postId,
+          widget.post.postId,
           context,
         );
   }
@@ -57,7 +57,7 @@ class _TextWidgetState extends ConsumerState<TextWidget> {
   bool checkSavedPost() {
     return ref.watch(getUserByIdController(currentUserId)).when(
       data: (data) {
-        if (data.saved.contains(widget.postId)) {
+        if (data.saved.contains(widget.post.postId)) {
           return true;
         } else {
           return false;
@@ -86,12 +86,12 @@ class _TextWidgetState extends ConsumerState<TextWidget> {
 
   //save post
   savePost(WidgetRef ref) {
-    ref.read(postControllerProvider.notifier).savePost(widget.postId);
+    ref.read(postControllerProvider.notifier).savePost(widget.post.postId);
   }
 
   //navigate to people who liked screen
   navigateToReactsScreen(BuildContext context) {
-    navigatorPush(context, PeopleWhoReactedScreen(postId: widget.postId));
+    navigatorPush(context, PeopleWhoReactedScreen(postId: widget.post.postId));
   }
 
   //navigate to user profile screen
@@ -106,18 +106,16 @@ class _TextWidgetState extends ConsumerState<TextWidget> {
   @override
   Widget build(BuildContext context) {
     print("post widget rebuilding");
-    return ref.watch(getPostByIdControllerProvider(widget.postId)).when(
-      data: (post) {
-        return Container(
+   return Container(
           width: double.infinity,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ///post header app bar
-              _topBarOfTextWidget(context, post),
+              _topBarOfTextWidget(context, widget.post),
 
               //post image
-              post.postImage == null || post.postImage == ""
+              widget.post.postImage == null || widget.post.postImage == ""
                   ? Container()
                   : Container(
                       margin: EdgeInsets.only(left: 45, right: 14, top: 5),
@@ -136,8 +134,8 @@ class _TextWidgetState extends ConsumerState<TextWidget> {
                               navigatorPush(
                                 context,
                                 PostImageView(
-                                  imageUrl: post.postImage.toString(),
-                                  postId: post.postId,
+                                  imageUrl: widget.post.postImage.toString(),
+                                  postId: widget.post.postId,
                                 ),
                               );
                             },
@@ -147,7 +145,7 @@ class _TextWidgetState extends ConsumerState<TextWidget> {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: Image.network(
-                                  post.postImage.toString(),
+                                  widget.post.postImage.toString(),
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -158,13 +156,13 @@ class _TextWidgetState extends ConsumerState<TextWidget> {
                     ),
 
               //post description
-              post.postDescription != ""
+              widget.post.postDescription != ""
                   ? Container(
                       padding: EdgeInsets.only(left: 45, top: 6, bottom: 1),
                       child: Row(
                         children: [
                           MyTextWidget(
-                            text: "${post.postDescription}",
+                            text: "${widget.post.postDescription}",
                             color: Theme.of(context).hintColor,
                           ),
                         ],
@@ -173,7 +171,7 @@ class _TextWidgetState extends ConsumerState<TextWidget> {
                   : Container(),
 
               ///likes and comments
-              _postReactionBar(ref, post, context),
+              _postReactionBar(ref, widget.post, context),
 
               ///total likes and total comments display text
               GestureDetector(
@@ -186,7 +184,7 @@ class _TextWidgetState extends ConsumerState<TextWidget> {
                     children: [
                       MyTextWidget(
                         text:
-                            "${"${post.likes.length}  ${tr(LocaleKeys.lblLikes)}"}",
+                            "${"${widget.post.likes.length}  ${tr(LocaleKeys.lblLikes)}"}",
                         color: Colors.grey,
                         fontSize: 14,
                       ),
@@ -195,7 +193,7 @@ class _TextWidgetState extends ConsumerState<TextWidget> {
                       //total comments
                       MyTextWidget(
                         text:
-                            "${"${post.totalComment}  ${tr(LocaleKeys.lblComments)}"}",
+                            "${"${widget.post.totalComment}  ${tr(LocaleKeys.lblComments)}"}",
                         color: Colors.grey,
                         fontSize: 14,
                       ),
@@ -212,17 +210,8 @@ class _TextWidgetState extends ConsumerState<TextWidget> {
             ],
           ),
         );
-      },
-      error: (error, s) {
-        return Container(
-          height: MediaQuery.of(context).size.width,
-          child: Center(child: Text("This post is not existed anymore!")),
-        );
-      },
-      loading: () {
-        return Container(height: 300, child: loadingWidget());
-      },
-    );
+      
+      
   }
 
   ///to bar of the post widget that shows user profile image,name,post time,and humburger menu at the right side

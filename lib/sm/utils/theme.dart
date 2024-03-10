@@ -25,8 +25,10 @@ class MyTheme {
 
   static final darkMode = ThemeData.dark().copyWith(
     useMaterial3: false,
+    //colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
     scaffoldBackgroundColor: appBarColor,
     cardColor: Colors.grey.shade800,
+    
     appBarTheme: const AppBarTheme(
       backgroundColor: appBarColor,
       iconTheme: IconThemeData(
@@ -37,13 +39,15 @@ class MyTheme {
       backgroundColor: appBarColor,
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: Colors.black,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey.shade300),
+      backgroundColor: Colors.black,
+      selectedItemColor: Colors.white,
+      unselectedItemColor: Colors.grey.shade300,
+    ),
     primaryColor: Colors.white,
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
         backgroundColor: MaterialStatePropertyAll(Colors.grey.shade900),
+        foregroundColor: MaterialStatePropertyAll(Colors.white)
       ),
     ),
   );
@@ -53,7 +57,6 @@ class MyTheme {
       cardColor: Colors.grey.shade100,
       scaffoldBackgroundColor: Colors.white,
       primaryColor: Colors.black,
-      
       primarySwatch: MaterialColor(
         0xFF424242,
         <int, Color>{

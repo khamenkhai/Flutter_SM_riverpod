@@ -6,7 +6,7 @@ import 'package:sm_project/sm/controllers/storyController.dart';
 import 'package:sm_project/sm/controllers/userController.dart';
 import 'package:sm_project/sm/models/userModel.dart';
 import 'package:sm_project/sm/utils/utils.dart';
-import 'package:sm_project/sm/view/commonWidgets/postWidget.dart';
+import 'package:sm_project/sm/view/commonWidgets/testWidget.dart';
 import 'package:sm_project/sm/view/home/story/createStoryScreen.dart';
 import 'package:sm_project/sm/view/home/story/storyScreen.dart';
 
@@ -37,7 +37,10 @@ class FeedScreen extends ConsumerWidget {
                       shrinkWrap: true,
                       itemCount: data.length,
                       itemBuilder: (context, index) {
-                        return PostWidget(postId: data[index].postId);
+                        
+                        
+                        return SinglePostWidget(post: data[index]);
+                       // return PostWidget(postId: data[index].postId);
                       },
                     ),
                   );

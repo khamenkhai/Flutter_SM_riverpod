@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -33,17 +35,6 @@ class _LanguageScreenState extends State<LanguageScreen> {
             Icon(context.locale == Locale('my', '') ? Icons.radio_button_checked : Icons.radio_button_off)
             )
           ),
-          // ListTile(
-          //   title: Text("Myanmar"),
-          //   trailing: Radio(
-          //       value: false,
-          //       groupValue: false,
-          //       onChanged: (value) {
-                  // context.locale = context.locale == Locale('en', '')
-                  //     ? Locale('my', '')
-                  //     : Locale('en', '');
-          //       }),
-          // ),
         ],
       ),
     );

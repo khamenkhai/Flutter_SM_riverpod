@@ -18,7 +18,7 @@ import 'package:uuid/uuid.dart';
 //to controller all the related fields with post controller
 final postControllerProvider = StateNotifierProvider<PostController, bool>(
     (ref) => PostController(
-      notificationsService:   NotificationsService(),
+        notificationsService: NotificationsService(),
         storageRepository: ref.read(storageRepositoryController),
         ref: ref,
         postRepository: ref.read(postRepoProvider)));
@@ -26,7 +26,7 @@ final postControllerProvider = StateNotifierProvider<PostController, bool>(
 //to get all the posts data as a stream data
 final getFeedPostsControllerProvider = StreamProvider<List<PostModel>>((ref) {
   return ref.read(postRepoProvider).getFeedPost();
- // return ref.read(postRepoProvider).getFeedPost();
+  // return ref.read(postRepoProvider).getFeedPost();
 });
 
 ///to get a single post data by it's id
@@ -47,10 +47,12 @@ final getCommentsOfAPostControllerProvider =
   return ref.read(postControllerProvider.notifier).getCommentsOfAPost(postId);
 });
 
-
 //to get all replies of a comment
-final getRepliesOfCommentControllerProvider =  StreamProvider.family((ref, String commentId) {
-  return ref.read(postControllerProvider.notifier).getRepliesOfAComment(commentId);
+final getRepliesOfCommentControllerProvider =
+    StreamProvider.family((ref, String commentId) {
+  return ref
+      .read(postControllerProvider.notifier)
+      .getRepliesOfAComment(commentId);
 });
 
 ///*****************************main post controller class************************************
@@ -110,10 +112,8 @@ class PostController extends StateNotifier<bool> {
     Navigator.pop(context);
   }
 
-
   //update post
   updatePost({required PostModel post, required BuildContext context}) async {
-
     state = true;
 
     bool status = await postRepository.updatePost(post);
@@ -127,18 +127,15 @@ class PostController extends StateNotifier<bool> {
     status ? Navigator.pop(context) : null;
   }
 
-
   //get all the post
   Stream<List<PostModel>> getFeedPosts() {
     return postRepository.getFeedPost();
   }
 
-
   //get post by is
   Stream<PostModel> getPostById(String postId) {
     return postRepository.getPostById(postId);
   }
-
 
   ///delete a post
   deleteAPost(String postId, BuildContext context) async {
@@ -146,92 +143,78 @@ class PostController extends StateNotifier<bool> {
     showMessageSnackBar(message: "Delete a post", context: context);
   }
 
-
   //like a post
   likeAPost({required String postId, required String targetUserId}) async {
     String currentUserId = FirebaseAuth.instance.currentUser!.uid;
     bool isLike = await postRepository.likeAPost(postId, currentUserId);
     if (isLike && (currentUserId != targetUserId)) {
-      // ref.read(notiControllerProvider).sendANotiMessage(
-      //   // sender: user,postId: postId, notiMessage: "like your post", targetUserId: targetUserId,
-      //   noti: NotiModel(
-      //       notiId: notiId,
-      //       dateTime: DateTime.now(),
-      //       notiMessage: "comment on your post",
-      //       userId: targetUserId,
-      //       postId: postId,
-      //       senderId: currentUserId,
-      //       senderName: currentUser.name,
-      //       senderProfile: currentUser.profileImg,
-      //     ),
-      //   );
+
     }
   }
-
 
   ///get user's post by userId
   Stream<List<PostModel>> getUserPostsByUid(String uid) {
     return postRepository.getUserPostsByUid(uid);
   }
 
-
-
   ///write a comment to a post
-  writeAComment(
-      {required String postId,
-      required String commentText,
-      required String targetUserId,
-      required String targetUserToken, 
-      }) async {
+  writeAComment({
+    required String postId,
+    required String commentText,
+    required String targetUserId,
+    required String targetUserToken,
+  }) async {
     //final user = ref.read(currentUserProvider);
-  UserModel? currentUser;
+    UserModel? currentUser;
 
-    ref.read(getUserByIdController(currentUserId)).whenData((value){
+    ref.read(getUserByIdController(currentUserId)).whenData((value) {
       currentUser = value;
     });
 
-    if(currentUser!=null){
+    if (currentUser != null) {
       String commentId = Uuid().v4();
-    String notiId = Uuid().v4();
-    CommentModel comment = CommentModel(
-      commentId: commentId,
-      postId: postId,
-      comment: commentText,
-      time: DateTime.now(),
-      senderName: currentUser!.name,
-      senderProfile: currentUser!.profileImg,
-      senderId: currentUser!.uid,
-    );
+      String notiId = Uuid().v4();
+      CommentModel comment = CommentModel(
+        commentId: commentId,
+        postId: postId,
+        comment: commentText,
+        time: DateTime.now(),
+        senderName: currentUser!.name,
+        senderProfile: currentUser!.profileImg,
+        senderId: currentUser!.uid,
+      );
 
-    await postRepository.writeAComment(commentId, comment);
+      await postRepository.writeAComment(commentId, comment);
 
-    if (currentUser!.uid != targetUserId) {
-      // sender: user,postId: postId, notiMessage: "comment on your post", targetUserId: targetUserId
-      ref.read(notiControllerProvider).sendANotiMessage(
+      if (currentUser!.uid != targetUserId) {
+        // sender: user,postId: postId, notiMessage: "comment on your post", targetUserId: targetUserId
+        ref.read(notiControllerProvider).sendANotiMessage(
               noti: NotiModel(
-            notiId: notiId,
-            dateTime: DateTime.now(),
-            notiMessage: "comment on your post",
-            userId: targetUserId,
-            postId: postId,
-            senderId: currentUser?.uid,
-            senderName: currentUser!.name,
-            senderProfile: currentUser!.profileImg,
-          ),
-        );
+                notiId: notiId,
+                dateTime: DateTime.now(),
+                notiMessage: "comment on your post",
+                userId: targetUserId,
+                postId: postId,
+                senderId: currentUser?.uid,
+                senderName: currentUser!.name,
+                senderProfile: currentUser!.profileImg,
+              ),
+            );
 
         //test noti
 
-        await notificationsService.sendNotification(postId: postId,body: "body", senderId: currentUserId, receiverTokenId: targetUserToken);
+        await notificationsService.sendNotification(
+            postId: postId,
+            body: "${currentUser!.name} comment on your post!",
+            senderId: currentUserId,
+            receiverTokenId: targetUserToken);
+      }
     }
-    }
+  }
 
-    await notificationsService.sendNotification(postId: postId,body: "${currentUser!.name} comment on your post!", senderId: currentUserId, receiverTokenId: targetUserToken);
-  } 
+  ///edit a comment
 
-  ///edit a comment  
-  
-  Future<bool> editAComment(CommentModel comment)async{
+  Future<bool> editAComment(CommentModel comment) async {
     print("editing");
     state = true;
     bool status = await postRepository.editComment(comment);
@@ -239,7 +222,7 @@ class PostController extends StateNotifier<bool> {
     return status;
   }
 
-  Future<bool> editAReply(ReplyModel reply)async{
+  Future<bool> editAReply(ReplyModel reply) async {
     print("editing");
     state = true;
     bool status = await postRepository.editAReply(reply);
@@ -251,6 +234,7 @@ class PostController extends StateNotifier<bool> {
   deleteAComment(CommentModel comment) {
     postRepository.deleteAComment(comment);
   }
+
   //delete a comment
   deleteAReply(ReplyModel reply) {
     postRepository.deleteAReply(reply);
@@ -270,29 +254,28 @@ class PostController extends StateNotifier<bool> {
     postRepository.savePost(postId: postId);
   }
 
-
   ///make a reply
-  makeAReply({required String commentId,required String reply,
-  required String senderName,
-  required String senderProfile,
-  required String senderId,
-  }){
+  makeAReply({
+    required String commentId,
+    required String reply,
+    required String senderName,
+    required String senderProfile,
+    required String senderId,
+  }) {
     String replyId = Uuid().v4();
     ReplyModel replyModel = ReplyModel(
-      replyId: replyId,
-      commentId: commentId, 
-      reply: reply, 
-      time: DateTime.now(), 
-      senderName: senderName, 
-      senderProfile: senderProfile, 
-      senderId: senderId);
+        replyId: replyId,
+        commentId: commentId,
+        reply: reply,
+        time: DateTime.now(),
+        senderName: senderName,
+        senderProfile: senderProfile,
+        senderId: senderId);
     postRepository.makeAReply(replyModel);
   }
 
-
   ///get replies of a comment
-  Stream<List<ReplyModel>> getRepliesOfAComment(String commentId){
+  Stream<List<ReplyModel>> getRepliesOfAComment(String commentId) {
     return postRepository.getAllRepliesOfComment(commentId);
   }
-
 }

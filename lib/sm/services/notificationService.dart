@@ -135,14 +135,6 @@ class NotificationsService {
           print('Received postId: $postId');
           await navigatorPush(context, ViewPostScreen(postId: postId));
       }
-      // await Navigator.of(context).push(
-      //   MaterialPageRoute(
-      //       builder: (_) => Scaffold(
-      //             appBar: AppBar(
-      //               title: Text("testing"),
-      //             ),
-      //           )),
-      // );
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {

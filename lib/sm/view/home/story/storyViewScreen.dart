@@ -27,7 +27,7 @@ class _StoryViewScreenState extends State<StoryViewScreen> {
   void initStoryPageItems() {
     for (int i = 0; i < widget.stories.length; i++) {
       storyItems.add(StoryItem.pageImage(
-        url: widget.stories[i].storyImg,
+        url: widget.stories[i].storyImg.toString(),
         controller: controller,
       ));
     }

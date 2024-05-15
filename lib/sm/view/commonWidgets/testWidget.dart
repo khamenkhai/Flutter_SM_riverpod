@@ -105,7 +105,7 @@ class _SinglePostWidgetState extends ConsumerState<SinglePostWidget> {
 
   @override
   Widget build(BuildContext context) {
-    print("post widget rebuilding");
+   // print("post widget rebuilding");
    return Container(
           width: double.infinity,
           child: Column(

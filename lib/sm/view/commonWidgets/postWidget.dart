@@ -105,7 +105,7 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
 
   @override
   Widget build(BuildContext context) {
-    print("post widget rebuilding");
+    //print("post widget rebuilding");
     return ref.watch(getPostByIdControllerProvider(widget.postId)).when(
       data: (post) {
         return Container(
@@ -225,7 +225,7 @@ class _PostWidgetState extends ConsumerState<PostWidget> {
     );
   }
 
-  ///to bar of the post widget that shows user profile image,name,post time,and humburger menu at the right side
+  ///top bar of the post widget that shows user profile image,name,post time,and humburger menu at the right side
   GestureDetector _topBarOfPostWidget(BuildContext context, PostModel post) {
     return GestureDetector(
       onTap: () {

@@ -100,7 +100,7 @@ Future<List<UserModel>> getUsersWhoSharedStories2(List<String> followingIds) asy
 
     if (followingIds.contains(story.userId)) {
       uniqueUserIds.add(FirebaseAuth.instance.currentUser!.uid);
-      uniqueUserIds.add(story.userId);
+      uniqueUserIds.add(story.userId.toString());
     }
   }
 
@@ -133,7 +133,7 @@ Stream<List<UserModel>> getUsersWhoSharedStories(List<String> followingIds) asyn
       StoryModel story = StoryModel.fromMap(document.data() as Map<String, dynamic>);
       if (followingIds.contains(story.userId)) {
         //uniqueUserIds.add(FirebaseAuth.instance.currentUser!.uid);
-        uniqueUserIds.add(story.userId);
+        uniqueUserIds.add(story.userId.toString());
         print("story data : ${story} and user id : ${story.userId}");
       }
     }

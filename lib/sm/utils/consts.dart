@@ -7,7 +7,7 @@ class Constants {
   static const storyCollection = 'SMstories';
 
 
-  static const fcmServerToken = "key=AAAAFGnTYf0:APA91bGWG6iz5tAl4dfvIzRptQRSXk5SEwV5Ffd6OZDYiuXOvlFCmXnt6ubM5CDGLyobKZiIo7aCpwI49i_QZ05zX3CqDEhtzAJBZiDzvo0y-RiQk_N67bUKoV8RugI9pCimQwJWtONG";
+  static const fcmServerToken = "write your api key here";
 
   static const List<String> feelings = [
     "😀 Feeling happy",

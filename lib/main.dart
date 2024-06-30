@@ -6,6 +6,7 @@ import 'package:sm_project/firebase_options.dart';
 import 'package:sm_project/services/notificationService.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+///this code is for initializing firebase messaging
 Future<void> _backgroundMessageHandler(RemoteMessage message) async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
